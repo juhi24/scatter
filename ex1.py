@@ -41,17 +41,25 @@ class ParticleRange:
         plt.title('Mie vs. Rayleigh scattering efficiency ratio with ' + self.name)
         plt.ylabel(r'$Q_{Mie}/Q_{Ray}$')
         plt.xlabel('Size parameter')
-        plt.loglog(self.x,map(add,self.params('qsca'),-np.array(self.ray_qsca())))
+        plt.loglog(self.x,map(add,self.params('qsca'),-self.ray_qsca()))
+        f.show()
+        
+    def plot_error(self):
+        f = plt.figure()
+        plt.title('Absolute error (' + self.name + ')')
+        plt.xlabel('Size parameter')
+        plt.ylabel(r'$(Q_{Mie}-Q_{Ray}/Q_{Mie}*100%$')
+        plt.loglog(self.x,np.subtract(self.params('qsca'),self.ray_qsca()))
         f.show()
         
     def ray_qsca(self):
-        return [8/3*x**4*np.absolute(self.alpha())**2 for x in self.x]
+        return np.array([8/3*x**4*np.absolute(self.alpha())**2 for x in self.x])
         
     def ray_qb(self):
         return self.ray_qsca()
         
     def ray_qabs(self):
-        return [4*x*self.alpha().imag for x in self.x]
+        return np.array([4*x*self.alpha().imag for x in self.x])
         
     def ray_qext(self):
         return map(add,self.ray_qabs(),self.ray_qsca())
